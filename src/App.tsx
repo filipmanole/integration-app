@@ -8,12 +8,14 @@ import { Separator } from "./components/ui/separator";
 import { ErrorMessage } from "./ErrorMessage";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { IntegrationSelector } from "./IntegrationSelector";
+import { ArrowUpRightFromSquareIcon } from "lucide-react";
 
 type CreateContactFields = {
   fullName?: string;
   email?: string;
   phone?: string;
   companyName?: string;
+  pronouns?: string;
 };
 
 export const App = () => {
@@ -24,25 +26,60 @@ export const App = () => {
 
   const [contactFields, setContactFields] = useState<CreateContactFields>({});
   const [error, setError] = useState<string | null>(null);
+  const [contactUrl, setContactUrl] = useState<string | null>(null);
+
+  const getContact = async (id: string) => {
+    if (!integrationKey) {
+      setError("Please select an integration");
+      return;
+    }
+
+    try {
+      const res = await integrationApp
+        .connection(integrationKey)
+        .action("find-contact-by-id")
+        .run({ id });
+
+      if (!res.output.uri) throw Error("No url from getting contact");
+      setError(null);
+      return res;
+    } catch (error) {
+      setError("Error while getting contact");
+      console.error(error);
+    }
+  };
 
   const createContact = async () => {
-    const { fullName, email, phone, companyName } = contactFields;
-    if (!fullName || !email || !phone || !companyName || !integrationKey) {
+    const { fullName, email, phone, companyName, pronouns } = contactFields;
+    if (
+      !fullName ||
+      !email ||
+      !phone ||
+      !companyName ||
+      !pronouns ||
+      !integrationKey
+    ) {
       setError("Please fill in all fields and select an integration");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await integrationApp
+      setContactUrl(null);
+      const createRes = await integrationApp
         .connection(integrationKey)
         .action("create-contact")
         .run(contactFields);
 
+      if (!createRes.output.id) throw Error("No id from created contact");
+
+      const getRes = await getContact(createRes.output.id);
+
+      setContactUrl(getRes?.output.uri);
       setError(null);
     } catch (error) {
       setError("Error while creating contact");
-      console.log(error);
+      console.error(error);
     }
 
     setLoading(false);
@@ -120,11 +157,37 @@ export const App = () => {
           }}
         />
 
+        <Label htmlFor="pronouns">Pronouns</Label>
+        <Input
+          type="pronouns"
+          placeholder="Pronouns"
+          onChangeCapture={(x) => {
+            const pronouns = x.currentTarget.value;
+            setContactFields((v) => {
+              return {
+                ...v,
+                pronouns,
+              };
+            });
+          }}
+        />
+
         <Separator className="my-4" />
 
         <Button onClick={createContact}>
           {loading ? <LoadingSpinner /> : "Create Contact"}
         </Button>
+
+        {contactUrl && (
+          <Button
+            onClick={() => {
+              window.open(contactUrl, "_blank");
+            }}
+          >
+            <ArrowUpRightFromSquareIcon className="h-5 w-5" />
+            <div className="truncate max-w-48 underline">{contactUrl}</div>
+          </Button>
+        )}
 
         {error && <ErrorMessage message={error} />}
       </Card>
