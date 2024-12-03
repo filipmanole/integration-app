@@ -1,12 +1,10 @@
-import { useIntegrationApp, useIntegrations } from "@integration-app/react";
+import React, { useState } from "react";
+import { useIntegrationApp } from "@integration-app/react";
 import { Button } from "./components/ui/button";
-import { useTheme } from "./ThemeContext";
-import React, { useEffect, useState } from "react";
 import { Card, CardTitle } from "./components/ui/card";
 import { Input } from "./components/ui/input";
 import { Label } from "./components/ui/label";
 import { Separator } from "./components/ui/separator";
-import { CircleSlash, Loader2 } from "lucide-react";
 import { ErrorMessage } from "./ErrorMessage";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { IntegrationSelector } from "./IntegrationSelector";
