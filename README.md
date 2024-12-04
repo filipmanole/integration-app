@@ -40,6 +40,24 @@ npm run dev
 
 [https://lucent-gumption-ecd7aa.netlify.app/]()
 
+## Demo
+
+1.  Connect to an integration (HubSpot/Pipedrive)
+    <br><br>
+    <img title="a title" alt="Alt text" src="screenshots/integration1.png">
+
+2.  After connecting, select it by clicking "Select"
+    <br><br>
+    <img title="a title" alt="Alt text" src="screenshots/integration2.png">
+
+3.  Fill all fields and create the contact by cliking on "Create Contact"
+    <br><br>
+    <img title="a title" alt="Alt text" src="screenshots/contact.png">
+
+4.  After creating, a new button will appear that will redirect to the created contact
+    <br><br>
+    <img title="a title" alt="Alt text" src="screenshots/after-create.png">
+
 ## Related links
 
 - [https://integration.app/]()
